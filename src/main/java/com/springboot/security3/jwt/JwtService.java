@@ -52,8 +52,8 @@ public class JwtService {
                                  UserDetails userDetails) {
         return Jwts
                 .builder()
-                .setSubject(userDetails.getUsername())
                 .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusWeeks(14)))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
