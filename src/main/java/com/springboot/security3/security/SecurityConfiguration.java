@@ -1,17 +1,16 @@
 package com.springboot.security3.security;
 
-import com.springboot.security3.user.Role;
+import com.springboot.security3.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
     private final PasswordEncoder passwordEncoder;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationProvider authenticationProvider;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -27,12 +28,17 @@ public class SecurityConfiguration {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .formLogin()
-                .defaultSuccessUrl("/hello", true);
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                //.formLogin()
+                //.defaultSuccessUrl("/hello", true);
 
         return http.build();
     }
 
+    /*
     @Bean
     public UserDetailsService userDetailsService() {
 
@@ -55,4 +61,5 @@ public class SecurityConfiguration {
                 admin
         );
     }
+     */
 }
